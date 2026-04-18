@@ -4,49 +4,35 @@ import pandas as pd
 # ---------------------------
 # CONFIG
 # ---------------------------
-st.set_page_config(page_title="Business Dashboard", layout="wide")
-
-# 👉 YOUR CSV LINKS
-CSV_FILES = {
-    "Dental clinic": "https://docs.google.com/spreadsheets/d/1ktUxErd0fS5bdjT4lAkIa6v4tOmRmm9hysTXSpp_mK4/export?format=csv",
-    "Hospital": "https://docs.google.com/spreadsheets/d/1xZ2pqjm8RHBWlVIimvBuXPq6UFe4-bL8C4CLfjJHIYA/export?format=csv",
-    "Law firm or Advocate firm": "https://docs.google.com/spreadsheets/d/12I5HbsV3d3bDmzM_jUSBlGe1awYfRmW37juPWK0bjhg/export?format=csv",
-    "Real Estate": "https://docs.google.com/spreadsheets/d/1j3wnQ25wog9QB_wUoXyXYRAWUUESzHfeRelvwYVahOM/export?format=csv",
-    "Coaching Classes/Tutions": "https://docs.google.com/spreadsheets/d/10_Y-GEXHApcWO7Y9ddbTiUvOZv3aWQ_XIjk-ydJFC0s/export?format=csv",
-    "CA Firms": "https://docs.google.com/spreadsheets/d/1dxhtJ47-3sh1ab4vvHhrxF904rCvxf63n-UpV2ZO85I/export?format=csv"
-}
+st.set_page_config(
+    page_title="Business Dashboard",
+    page_icon="📊",
+    layout="wide"
+)
 
 # ---------------------------
-# LOAD DATA (SAFE)
-# ---------------------------
-@st.cache_data
-def load_data(url):
-    try:
-        df = pd.read_csv(url)
-        df.columns = df.columns.str.strip()
-        return df
-    except:
-        return pd.DataFrame()
-
-# ---------------------------
-# CONVERT CSV → SHEET LINK
-# ---------------------------
-def get_sheet_url(csv_url):
-    return csv_url.replace("/export?format=csv", "/edit")
-
-# ---------------------------
-# UI STYLING
+# HIDE STREAMLIT UI ELEMENTS
 # ---------------------------
 st.markdown("""
 <style>
-#MainMenu {visibility: hidden;}
-header {visibility: hidden;}
-footer {visibility: hidden;}
+/* Hide Streamlit default UI */
+#MainMenu, header, footer {
+    visibility: hidden;
+}
 
+/* Hide newer toolbar / decorations */
+.stAppToolbar,
+[data-testid="stToolbar"],
+[data-testid="stDecoration"] {
+    display: none !important;
+}
+
+/* App background */
 [data-testid="stAppViewContainer"] {
     background-color: #f6f8fb;
 }
 
+/* Remove padding issues */
 .block-container {
     padding-top: 1rem !important;
     padding-bottom: 1rem;
@@ -54,10 +40,12 @@ footer {visibility: hidden;}
     padding-right: 2rem;
 }
 
+/* Headings */
 h1, h2, h3 {
     color: #1f2937;
 }
 
+/* Tabs styling */
 button[data-baseweb="tab"] {
     font-size: 15px;
     font-weight: 500;
@@ -69,11 +57,13 @@ button[aria-selected="true"] {
     border-bottom: 3px solid #2563eb !important;
 }
 
+/* Dataframe styling */
 [data-testid="stDataFrame"] {
     border: 1px solid #e5e7eb;
     border-radius: 10px;
 }
 
+/* Sidebar styling */
 section[data-testid="stSidebar"] {
     background-color: #ffffff;
     border-right: 1px solid #e5e7eb;
@@ -82,18 +72,43 @@ section[data-testid="stSidebar"] {
 """, unsafe_allow_html=True)
 
 # ---------------------------
+# CSV LINKS
+# ---------------------------
+CSV_FILES = {
+    "Dental clinic": "https://docs.google.com/spreadsheets/d/1ktUxErd0fS5bdjT4lAkIa6v4tOmRmm9hysTXSpp_mK4/export?format=csv",
+    "Hospital": "https://docs.google.com/spreadsheets/d/1xZ2pqjm8RHBWlVIimvBuXPq6UFe4-bL8C4CLfjJHIYA/export?format=csv",
+    "Law firm or Advocate firm": "https://docs.google.com/spreadsheets/d/12I5HbsV3d3bDmzM_jUSBlGe1awYfRmW37juPWK0bjhg/export?format=csv",
+    "Real Estate": "https://docs.google.com/spreadsheets/d/1j3wnQ25wog9QB_wUoXyXYRAWUUESzHfeRelvwYVahOM/export?format=csv",
+    "Coaching Classes/Tutions": "https://docs.google.com/spreadsheets/d/10_Y-GEXHApcWO7Y9ddbTiUvOZv3aWQ_XIjk-ydJFC0s/export?format=csv",
+    "CA Firms": "https://docs.google.com/spreadsheets/d/1dxhtJ47-3sh1ab4vvHhrxF904rCvxf63n-UpV2ZO85I/export?format=csv"
+}
+
+# ---------------------------
+# LOAD DATA
+# ---------------------------
+@st.cache_data
+def load_data(url):
+    try:
+        df = pd.read_csv(url)
+        df.columns = df.columns.str.strip()
+        return df
+    except:
+        return pd.DataFrame()
+
+# ---------------------------
+# GOOGLE SHEET LINK
+# ---------------------------
+def get_sheet_url(csv_url):
+    return csv_url.replace("/export?format=csv", "/edit")
+
+# ---------------------------
 # TITLE
 # ---------------------------
 st.title("Business Leads Dashboard")
 st.caption("By A Rehman")
 
 # ---------------------------
-# CREATE TABS
-# ---------------------------
-tabs = st.tabs(list(CSV_FILES.keys()))
-
-# ---------------------------
-# CARD FUNCTION
+# CARD UI
 # ---------------------------
 def card(col, title, value, color):
     with col:
@@ -119,7 +134,12 @@ def card(col, title, value, color):
         )
 
 # ---------------------------
-# LOOP THROUGH TABS
+# TABS
+# ---------------------------
+tabs = st.tabs(list(CSV_FILES.keys()))
+
+# ---------------------------
+# MAIN LOOP
 # ---------------------------
 for tab, (name, url) in zip(tabs, CSV_FILES.items()):
     with tab:
@@ -167,6 +187,7 @@ for tab, (name, url) in zip(tabs, CSV_FILES.items()):
         col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
 
         card(col1, "Total Records", len(df), "#eef2ff")
+
         card(col2, "Business Domains",
              df["Buisness Domain"].nunique() if "Buisness Domain" in df.columns else 0,
              "#ecfeff")
@@ -202,11 +223,10 @@ for tab, (name, url) in zip(tabs, CSV_FILES.items()):
         st.dataframe(df, use_container_width=True, hide_index=True)
 
         # ---------------------------
-        # GOOGLE SHEET BUTTON (FIXED)
+        # SHEET BUTTON
         # ---------------------------
         sheet_url = get_sheet_url(url)
 
-        st.markdown("")
         st.link_button(
             f"🔗 Open {name} Sheet",
             sheet_url,
